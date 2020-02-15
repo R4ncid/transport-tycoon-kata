@@ -10,13 +10,11 @@ object TransportTycoon extends App {
     val eventEmitter = EventEmitter()
 
     val timer = Timer(eventEmitter)
-    val logger = ConsoleLogger(eventEmitter)
+    ConsoleLogger(eventEmitter)
+    Truck(1, Waiting(Factory), eventEmitter)
+    Truck(2, Waiting(Factory), eventEmitter)
+    Ship(3, Waiting(Port), eventEmitter)
 
-    val vehicles = List(
-      Truck(1, Route(Factory, Factory, 0), eventEmitter),
-      Truck(2, Route(Factory, Factory, 0), eventEmitter),
-      Ship(3, Route(Port, Port, 0), eventEmitter),
-    )
 
     var id = 0
     val cargoes = cargoesList.split("") map {
