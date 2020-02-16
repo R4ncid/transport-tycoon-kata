@@ -1,7 +1,16 @@
 package eu.ddd.transportTycoon.domain
 
+import eu.ddd.transportTycoon.EventEmitter
 
-sealed trait Location
+
+sealed trait Location{
+  override def toString: String = this match {
+    case Factory => "FACTORY"
+    case Port => "PORT"
+    case A => "A"
+    case B => "B"
+  }
+}
 
 
 trait FinalDestination
@@ -16,9 +25,22 @@ trait Producer extends Location {
 
 
 case object Factory extends Producer {
-  private var cargoes: List[Cargo] = List()
+  def produce(cargoesList: String, eventEmitter: EventEmitter): Unit = {
+    var id = 0
+    cargoes = cargoesList.split("") map {
+      case "A" =>
+        id = id + 1
+        eventEmitter.emit(CargoMade)
+        Cargo(id, A)
+      case "B" =>
+        id = id + 1
+        eventEmitter.emit(CargoMade)
+        Cargo(id, B)
+    } toList
+  }
 
-  def init(list: List[Cargo]):Unit = cargoes = list
+
+  private var cargoes: List[Cargo] = List()
 
   override def pick: Option[Cargo] =
     if (cargoes.isEmpty)
@@ -48,11 +70,9 @@ case object Port extends Producer with Warehouse {
 }
 
 case object A extends Warehouse with FinalDestination {
-  override def store(cargo: Cargo): Unit = {
-
-  }
+  override def store(cargo: Cargo): Unit = ()
 }
 
 case object B extends Warehouse with FinalDestination {
-  override def store(cargo: Cargo): Unit = {}
+  override def store(cargo: Cargo): Unit = ()
 }

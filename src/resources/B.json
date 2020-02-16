@@ -1,0 +1,4 @@
+# Deliver B
+{"cargo":[{"cargo_id":1,"destination":"B","origin":"FACTORY"}],"location":"FACTORY","event":"DEPART","transport_id":0,"time":0,"kind":"TRUCK","destination":"B"}
+{"cargo":[{"cargo_id":1,"destination":"B","origin":"FACTORY"}],"location":"B","event":"ARRIVE","transport_id":0,"time":5,"kind":"TRUCK"}
+{"location":"B","event":"DEPART","transport_id":0,"time":5,"kind":"TRUCK","destination":"FACTORY"}
