@@ -1,14 +1,20 @@
 package eu.ddd.transportTycoon.domain
 
-import eu.ddd.transportTycoon.{CargoDelivered, CargoPicked, Event, EventEmitter, Events, OneHourPassed}
+import eu.ddd.transportTycoon.EventEmitter
+import eu.ddd.transportTycoon.domain._
 
 sealed trait Vehicle {
   protected var cargo: Option[Cargo] = None
   protected var time: Int = 0
+  def id:Int
+  def kind: String = this match {
+    case t: Truck => "TRUCK"
+    case s: Ship => "SHIP"
+  }
   def deliverCargo(eventEmitter: EventEmitter): Unit = route().location match {
     case warehouse: Warehouse =>
       warehouse.store(cargo.get)
-      eventEmitter.fire(CargoDelivered(cargo.get, this, warehouse, time))
+      eventEmitter.emit(CargoDelivered(cargo.get, this, warehouse, time))
       cargo = None
   }
 
@@ -17,7 +23,7 @@ sealed trait Vehicle {
       val newCargo = producer.pick
       cargo = newCargo
       if (newCargo.isDefined) {
-        eventEmitter.fire(CargoPicked(newCargo.get, this, producer, time))
+        eventEmitter.emit(CargoPicked(newCargo.get, this, producer, time))
       }
   }
 
@@ -58,19 +64,34 @@ case class Truck(id: Int, private var status: VehicleStatus, eventEmitter: Event
     case Running(route) => route
   }
 
-  override def handleCargo(): Unit = route().location match {
-    case Factory => pickCargo(eventEmitter)
-    case _: Warehouse => deliverCargo(eventEmitter)
+  override def handleCargo(): Unit = {
+    status match {
+      case Running(route) =>
+        eventEmitter.emit(Arrived(cargo, this, time, route))
+      case _ =>
+    }
+    route().location match {
+      case Factory => pickCargo(eventEmitter)
+      case _: Warehouse => deliverCargo(eventEmitter)
+    }
   }
 
   override def updateRoute(): Unit = {
     status = route().location match {
-      case Port => Running(Routes.fromPortToFactory)
-      case B => Running(Routes.fromBToFactory)
+      case Port =>
+        eventEmitter.emit(Departed(cargo, this, time, Routes.fromFactoryToPort))
+        Running(Routes.fromPortToFactory)
+      case B =>
+        eventEmitter.emit(Departed(cargo, this, time, Routes.fromFactoryToB))
+        Running(Routes.fromBToFactory)
       case Factory =>
         cargo match {
-          case Some(Cargo(_, A)) => Running(Routes.fromFactoryToPort)
-          case Some(Cargo(_, B)) => Running(Routes.fromFactoryToB)
+          case Some(Cargo(_, A)) =>
+            eventEmitter.emit(Departed(cargo, this, time, Routes.fromPortToFactory))
+            Running(Routes.fromFactoryToPort)
+          case Some(Cargo(_, B)) =>
+            eventEmitter.emit(Departed(cargo, this, time, Routes.fromBToFactory))
+            Running(Routes.fromFactoryToB)
           case None => status
         }
     }
@@ -94,17 +115,28 @@ case class Ship(id: Int, private var status:VehicleStatus, eventEmitter: EventEm
     case Running(route) => route
   }
 
-  override def handleCargo(): Unit = route().location match {
-    case Port => pickCargo(eventEmitter)
-    case A => deliverCargo(eventEmitter)
+  override def handleCargo(): Unit = {
+    status match {
+      case Running(route) =>
+        eventEmitter.emit(Arrived(cargo, this, time, route))
+      case _ =>
+    }
+    route().location match {
+      case Port => pickCargo(eventEmitter)
+      case A => deliverCargo(eventEmitter)
+    }
   }
 
   override def updateRoute(): Unit =
     status = route().location match {
-      case A => Running(Routes.fromAToPort)
+      case A =>
+        eventEmitter.emit(Departed(cargo, this, time, Routes.fromPortToA))
+        Running(Routes.fromAToPort)
       case Port =>
         cargo match {
-          case Some(Cargo(_, A)) => Running(Routes.fromPortToA)
+          case Some(Cargo(_, A)) =>
+            eventEmitter.emit(Departed(cargo, this, time, Routes.fromAToPort))
+            Running(Routes.fromPortToA)
           case None => status
         }
     }

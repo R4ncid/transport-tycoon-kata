@@ -1,0 +1,14 @@
+# Deliver ABB
+{"cargo":[{"cargo_id":1,"destination":"A","origin":"FACTORY"}],"location":"FACTORY","event":"DEPART","transport_id":0,"time":0,"kind":"TRUCK","destination":"PORT"}
+{"cargo":[{"cargo_id":2,"destination":"B","origin":"FACTORY"}],"location":"FACTORY","event":"DEPART","transport_id":1,"time":0,"kind":"TRUCK","destination":"B"}
+{"cargo":[{"cargo_id":1,"destination":"A","origin":"FACTORY"}],"location":"PORT","event":"ARRIVE","transport_id":0,"time":1,"kind":"TRUCK"}
+{"location":"PORT","event":"DEPART","transport_id":0,"time":1,"kind":"TRUCK","destination":"FACTORY"}
+{"cargo":[{"cargo_id":1,"destination":"A","origin":"FACTORY"}],"location":"PORT","event":"DEPART","transport_id":2,"time":1,"kind":"SHIP","destination":"A"}
+{"location":"FACTORY","event":"ARRIVE","transport_id":0,"time":2,"kind":"TRUCK"}
+{"cargo":[{"cargo_id":3,"destination":"B","origin":"FACTORY"}],"location":"FACTORY","event":"DEPART","transport_id":0,"time":2,"kind":"TRUCK","destination":"B"}
+{"cargo":[{"cargo_id":2,"destination":"B","origin":"FACTORY"}],"location":"B","event":"ARRIVE","transport_id":1,"time":5,"kind":"TRUCK"}
+{"location":"B","event":"DEPART","transport_id":1,"time":5,"kind":"TRUCK","destination":"FACTORY"}
+{"cargo":[{"cargo_id":1,"destination":"A","origin":"FACTORY"}],"location":"A","event":"ARRIVE","transport_id":2,"time":5,"kind":"SHIP"}
+{"location":"A","event":"DEPART","transport_id":2,"time":5,"kind":"SHIP","destination":"PORT"}
+{"cargo":[{"cargo_id":3,"destination":"B","origin":"FACTORY"}],"location":"B","event":"ARRIVE","transport_id":0,"time":7,"kind":"TRUCK"}
+{"location":"B","event":"DEPART","transport_id":0,"time":7,"kind":"TRUCK","destination":"FACTORY"}
