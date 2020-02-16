@@ -29,4 +29,9 @@ class TransportTycoonSpec extends AnyFlatSpec{
     assert(time == 29)
   }
 
+  "a cargo list AABABBABABBBBAABA" should "take 65 hours" in {
+    val time = TransportTycoon.calculateTime("AABABBABABBBBAABA")
+    assert(time == 65)
+  }
+
 }

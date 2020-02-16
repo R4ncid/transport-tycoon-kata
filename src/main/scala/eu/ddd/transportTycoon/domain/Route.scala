@@ -1,19 +1,33 @@
 package eu.ddd.transportTycoon.domain
 
-case class Route (from: Location, to: Location, time: Int){
+trait Route{
+  def isArrived:Boolean
+  def proceed: Route
+  def location:Location
+}
+
+case class RouteWithDestination (from: Location, to: Location, time: Int) extends Route {
 
   def isArrived: Boolean = time < 1
 
   def proceed : Route = this.copy(time = Math.max(time - 1, 0))
 
+  override def location: Location = to
+}
+
+case class NoRoute(location: Location) extends Route {
+  override def isArrived: Boolean = true
+
+  override def proceed: Route = this
+
 }
 
 
 object Routes{
-  def fromFactoryToB: Route = Route(Factory, B, 5)
-  def fromFactoryToPort: Route = Route(Factory, Port, 1)
-  def fromBToFactory: Route = Route(B, Factory, 5)
-  def fromPortToFactory: Route = Route(Port, Factory, 1)
-  def fromPortToA: Route = Route(Port, A, 4)
-  def fromAToPort: Route = Route(A, Port, 4)
+  def fromFactoryToB: Route = RouteWithDestination(Factory, B, 5)
+  def fromFactoryToPort: Route = RouteWithDestination(Factory, Port, 1)
+  def fromBToFactory: Route = RouteWithDestination(B, Factory, 5)
+  def fromPortToFactory: Route = RouteWithDestination(Port, Factory, 1)
+  def fromPortToA: Route = RouteWithDestination(Port, A, 4)
+  def fromAToPort: Route = RouteWithDestination(A, Port, 4)
 }
